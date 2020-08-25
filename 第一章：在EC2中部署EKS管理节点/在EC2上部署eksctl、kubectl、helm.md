@@ -51,3 +51,4 @@ helm plugin install https://github.com/chartmuseum/helm-push.git
 创建IAM成功之后我们去给EC2附加超级管理员权限
 ![avatar](图片/2.7.png)
 ![avatar](图片/2.8.png)
+管理节点部署完毕

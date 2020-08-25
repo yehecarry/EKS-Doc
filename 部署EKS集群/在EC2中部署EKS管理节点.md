@@ -18,3 +18,13 @@ Amazon EKS 运行最新版本的开源 Kubernetes 软件，因此您可以使用
 ## 创建一个EC2
 在Ohio Region 上创建一个EC2
 ![avatar](图片/1.1.png)
+![avatar](图片/1.2.png)
+![avatar](图片/1.3.png)
+![avatar](图片/1.4.png)
+![avatar](图片/1.5.png)
+![avatar](图片/1.6.png)
+![avatar](图片/1.7.png)
+![avatar](图片/1.8.png)
+![avatar](图片/1.9.png)
+![avatar](图片/1.10.png)
+![avatar](图片/1.11png)

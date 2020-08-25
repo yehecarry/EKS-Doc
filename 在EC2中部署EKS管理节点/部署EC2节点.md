@@ -16,7 +16,7 @@ Amazon EKS 运行最新版本的开源 Kubernetes 软件，因此您可以使用
 
 # 在EC2 上部署EKS管理节点
 ## 创建一个EC2
-在Ohio Region 上创建一个EC2
+在Ohio Region 上创建一个EC2  
 ![avatar](图片/1.1.png)
 ![avatar](图片/1.2.png)
 ![avatar](图片/1.3.png)
@@ -27,4 +27,26 @@ Amazon EKS 运行最新版本的开源 Kubernetes 软件，因此您可以使用
 ![avatar](图片/1.8.png)
 ![avatar](图片/1.9.png)
 ![avatar](图片/1.10.png)
-![avatar](图片/1.11png)
+![avatar](图片/1.11.png)
+![avatar](图片/1.12.png)
+修改EC2 安全组开放22端口
+![avatar](图片/1.13.png)
+![avatar](图片/1.14.png)
+EC2创建成功后记录ip地址与刚才下载得私钥使用shell去登录这台EC2服务器,用户名为ec2-user  
+登录成功后
+```
+Connecting to 3.21.163.122:22...
+Connection established.
+To escape to local shell, press Ctrl+Alt+].
+
+WARNING! The remote SSH server rejected X11 forwarding request.
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+7 package(s) needed for security, out of 14 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-172-31-36-214 ~]$ 
+```

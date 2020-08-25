@@ -17,4 +17,4 @@ Amazon EKS 运行最新版本的开源 Kubernetes 软件，因此您可以使用
 # 在EC2 上部署EKS管理节点
 ## 创建一个EC2
 在Ohio Region 上创建一个EC2
-![avatar](图片/1.1png)
+![avatar](./图片/1.1png)

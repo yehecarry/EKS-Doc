@@ -1,13 +1,13 @@
 # 使用EKSCTL创建Nodegroup节点组
 Nodegroup节点组一共有三种类型
 - managed nodegroup
-- unmansged nodegroup
+- unmanaged nodegroup
 - Fargate
 
-我们的教程选用的是unmansged(自管理节点)，为什么呢，因为它功能最多，不受限制
+我们的教程选用的是unmanaged(自管理节点)，为什么呢，因为它功能最多，不受限制
 标准|EKS管理节点组|自管理节点|AWS Fargate
 ---|---|---|---
-可以运行需要Windows的容器|否|是 – 虽然，您的群集仍然需要至少一个（推荐用于可用性）Linux节点。|否
+可以运行需要Windows的容器|否|是 – 虽然，您的群集仍然需要至少一个（推荐用于可用性）Linux节点|否
 可以运行需要Linux的容器|是|是|是
 可以运行需要 推断性芯片|否|是 – 仅Linux节点|否
 可以运行需要GPU的工作负载|是 – 仅Linux节点|是 – 仅Linux节点|否
@@ -33,3 +33,96 @@ POD可以在公共子网中运行|是|是|否
 支持 HostPort 和 HostNetwork 在POD清单中|是|是|否
 区域可用性|所有可视区域|所有可视区域|某些 Amazon EKS-支持地区
 定价|成本 Amazon EC2 运行多个PODS的实例。有关更多信息，请参阅 Amazon EC2 定价|成本 Amazon EC2 运行多个PODS的实例。有关更多信息，请参阅 Amazon EC2 定价|个人成本 Fargate 内存和CPU配置。每个POD都有自己的成本。有关更多信息，请参阅 AWS Fargate
+
+首先创建一个安全组，设置一些内网的规则，例如ssh端口的开放，记录它的sg-id
+定义一个yaml文件
+```
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: xxx-tokyo-eks-prod-01   ## eks cluster name
+  region: ap-northeast-1    ## eks use region
+
+nodeGroups:
+
+  # 系统节点
+  - name: system-1-a    ##worker nodegroup名字
+    labels: 
+        nodetype: system  ## worker 节点的labels
+    instanceType: m5.2xlarge   ##计划使用的EC2类型
+    minSize: 1      ##autoscaling 最小值
+    desiredCapacity: 1  ##autoscaling 常规值
+    maxSize: 6 ##autoscaling 最大值
+    volumeSize: 100 ##系统系统盘大小
+    volumeType: gp2 ##系统盘类型
+    availabilityZones: ["ap-northeast-1a"] ##nodegroup所在AZ
+    privateNetworking: true ##是否使用私有网络
+    securityGroups: ##是否使用自定义安全组
+      withShared: true
+      withLocal: true
+      attachIDs: ["sg-xxxx"]   ##自定义安全组的名字创建一个默认的安全组
+    ssh:
+      publicKeyName: 'xxxx'  ##可以ssh到worker的key名字
+    tags:
+      Project: Devops ##定义一个tag，计费使用
+      k8s.io/cluster-autoscaler/enabled: "true"   ##定义自动扩容的tag
+      k8s.io/cluster-autoscaler/nuclearport-ohio-eks-prod: owned  ##定义自动扩容的tag
+    iam:
+      withAddonPolicies:    ##选择eks需要使用的iam权限
+        #imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        #certManager: true
+        #appMesh: true
+        ebs: true
+        #fsx: true
+        efs: true
+        albIngress: true
+        #xRay: true
+        cloudWatch: true
+        
+ # worker节点(一个从0开始的弹性集群)
+  - name: worker-1-a    ##worker nodegroup名字
+    labels:
+      nodetype: worker
+    instanceType: c5.large   ##计划使用的EC2类型
+    minSize: 0      ##autoscaling 最小值
+    desiredCapacity: 0  ##autoscaling 常规值
+    maxSize: 6 ##autoscaling 最大值
+    volumeSize: 100 ##系统系统盘大小
+    volumeType: gp2 ##系统盘类型
+    availabilityZones: ["ap-northeast-1a"] ##nodegroup所在AZ
+    privateNetworking: true
+    securityGroups:
+      withShared: true
+      withLocal: true
+      attachIDs: ["sg-xxxx"]
+    ssh:
+      publicKeyName: 'xxxxx'  ##可以ssh到worker的key名字
+    tags:
+      Project: Devops ##tag
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/nuclearport-ohio-eks-prod: owned
+      k8s.io/cluster-autoscaler/node-template/label/nodetype: worker
+      k8s.io/cluster-autoscaler/node-template/taint/useworker: "true:NoSchedule"
+    taints:
+      useworker: "true:NoSchedule"
+    iam:
+      withAddonPolicies:
+        #imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        #certManager: true
+        #appMesh: true
+        ebs: true
+        #fsx: true
+        efs: true
+        albIngress: true
+        #xRay: true
+        cloudWatch: true
+```
+使用命令创建他
+```
+eksctl create nodegroup --config-file create_nodegroup.yml
+```

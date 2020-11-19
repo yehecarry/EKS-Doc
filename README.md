@@ -1,9 +1,11 @@
 # 本文是在企业使用EKS1.16集群的教程教程大纲如下
 ## 部署EKS集群
 ### 在EC2中部署EKS管理节点
-#### 安装kubectl
+#### 部署EC2节点
 #### 安装eksctl
+#### 安装kubectl
 #### 安装helm3
+
 ### 集群中创建EKS Cluster集群
 ### 创建EKS Nodegroup节点组
 ## 部署服务插件
